@@ -1,0 +1,137 @@
+﻿@{
+    SetTitle("Systems");
+}
+
+<section class="az-list-wrapper">
+
+    <div class="mb-1">
+        <div class="row">
+            <div class="col-md-12">
+                <button class="btn btn-outline-secondary float-right" id="add-new-system"><i class="fa fa-plus"></i> @Translate("Add New System") </button>
+            </div>
+        </div>
+
+    </div>
+
+
+
+
+    <div class="action-dropdown-btn d-none">
+        <div class="advanced-filter-action">
+
+            <div class="input-group">
+                <button class="btn btn-primary mr-1 d-inline-block search-systems">   <i class="material-icons">search</i> @Translate("Search") </button>
+            </div>
+
+
+        </div>
+    </div>
+    <div class="">
+        <table class="table az-data-table nowrap" id="systems-table" style="width:100%">
+            <thead>
+                <tr role="row">
+                    <th>@Translate("Name")</th>
+                    <th>@Translate("Current Release")</th>
+                    <th>@Translate("Creation Time")</th>
+                    <th>@Translate("Actions")</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</section>
+
+
+<script id="tmp-system-actions" type="text/x-jsrender">
+    <a class="btn btn-icon btn-outline-primary edit-system"   data-id="{{:id}}"
+       data-toggle="tooltip" data-original-title="@Translate("Edit")" >
+        <i class="fa fa-edit"></i>
+    </a> 
+    <button type="button" class="btn btn-xs btn-icon btn-danger delete-system"
+            data-id="{{:id}}"
+            data-toggle="tooltip" data-original-title="@Translate("Delete")">
+        <i class="fa fa-trash"></i>
+    </button>
+    <button type="button" class="btn btn-xs btn-icon btn-primary new-release-system"
+            data-id="{{:id}}" data-release="{{:releaseIndex}}"
+            data-toggle="tooltip" data-original-title="@Translate("New Release")">
+        <i class="fa fa-plus"></i>
+    </button>
+     <button type="button" class="btn btn-xs btn-icon btn-secondary show-releases"
+            data-id="{{:id}}"  
+            data-toggle="tooltip" data-original-title="@Translate("Releases")">
+        <i class="fa fa-list"></i>
+    </button>
+</script>
+
+<script id="tmp-name" type="text/x-jsrender">
+    <span>{{:name}}</span>
+</script> 
+<script id="tmp-system-creation-time" type="text/x-jsrender">
+    <span>{{*: Utils.formatDateTime(data.creationTime)}}</span>
+</script> 
+
+<script id="tmp-set-system" type="text/x-jsrender">
+    <div class="row set-system-form" id="set-system-form">
+        <input type="hidden" name="Id" value="{{:id}}" />
+        <div class="col-12">
+            <div class="form-group">
+                <label>System Name</label>
+                <input type="text" name="Name" required placeholder="@Translate("System Name")"
+                       class="form-control" value="{{:name}}">
+            </div>
+        </div>
+    </div>
+</script>
+
+<script id="tmp-set-system-log" type="text/x-jsrender">
+    <div class="row set-system-log-form" id="set-system-log-form">
+        <input type="hidden" name="Id" value="{{:id}}" />
+        <input type="hidden" name="appSystemId" value="{{:appSystemId}}" />
+         <div class="col-12">
+            <div class="form-group">
+                <label>New Release</label>
+                <input type="text" readonly  class="form-control" value="{{:newRelease}}">
+            </div>
+        </div>
+        <div class="col-12">
+            <div class="form-group">
+                <label>Changes</label>
+                <textarea type="text" name="Description" required placeholder="@Translate("Description")" rows="10"
+                       class="form-control" value="{{:description}}"></textarea>
+            </div>
+        </div>
+    </div>
+</script>
+
+
+<script id="tmp-system-releases" type="text/x-jsrender">
+    <div class="row system-releases-form" id="system-releases-form">
+        <input type="hidden" name="Id" value="{{:id}}" /> 
+         <div class="col-12">
+            <div class="form-group">
+                <label>Release</label>
+                 <select class="form-control" id="system-log-release"> 
+                     <option value="">Choose Release</option>
+                     {{for logs}}
+                     <option value="{{:id}}">{{:releaseText}}</option>
+                     {{/for}}
+                 </select>
+            </div>
+        </div>
+        <div class="col-12">
+            <div class="form-group">
+                <label>Changes</label>
+                <textarea type="text" name="Description" id="release-description" required placeholder="@Translate("Description")" rows="10"
+                       class="form-control" value="{{:description}}"></textarea>
+            </div>
+        </div>
+    </div>
+</script>
+
+
+
+@section Scripts
+    {
+
+    <script src="~/js/app/systems.js" asp-append-version="true"></script>
+}

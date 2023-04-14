@@ -1,0 +1,190 @@
+﻿@{
+    SetTitle("Modules");
+}
+
+<section class="az-list-wrapper">
+
+    <div class="mb-1">
+        <div class="row">
+            <div class="col-md-12">
+                <button class="btn btn-outline-secondary float-right" id="add-new-module"><i class="fa fa-plus"></i> @Translate("Add New Module") </button>
+            </div>
+        </div>
+
+    </div>
+
+
+
+
+    <div class="action-dropdown-btn d-none">
+        <div class="advanced-filter-action">
+
+            <div class="input-group">
+                <button class="btn btn-primary mr-1 d-inline-block search-modules">   <i class="material-icons">search</i> @Translate("Search") </button>
+            </div>
+
+
+        </div>
+    </div>
+    <div class="">
+        <table class="table az-data-table nowrap" id="modules-table" style="width:100%">
+            <thead>
+                <tr role="row">
+                    <th>@Translate("Name")</th>
+                    <th>@Translate("Current Version")</th>
+                    <th>@Translate("Current Update")</th> 
+                    <th>@Translate("Creation Time")</th>
+                    <th>@Translate("Actions")</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</section>
+
+
+<script id="tmp-module-actions" type="text/x-jsrender">
+    <a class="btn btn-icon btn-outline-primary edit-module"   data-id="{{:id}}"
+       data-toggle="tooltip" data-original-title="@Translate("Edit")" >
+        <i class="fa fa-edit"></i>
+    </a>
+    <button type="button" class="btn btn-xs btn-icon btn-danger delete-module"
+            data-id="{{:id}}"
+            data-toggle="tooltip" data-original-title="@Translate("Delete")">
+        <i class="fa fa-trash"></i>
+    </button>
+    <button type="button" class="btn btn-xs btn-icon btn-primary new-version-module"
+            data-id="{{:id}}" data-version="{{:versionIndex}}"
+            data-toggle="tooltip" data-original-title="@Translate("New Version")">
+        <i class="fa fa-plus"></i>
+    </button>
+     <button type="button" class="btn btn-xs btn-icon btn-info new-update-module"
+            data-id="{{:id}}" data-version="{{:versionIndex}}"  data-update="{{:updateIndex}}"
+            data-toggle="tooltip" data-original-title="@Translate("New Update")">
+        <i class="fa fa-plus-square"></i>
+    </button>
+     <button type="button" class="btn btn-xs btn-icon btn-secondary show-versions"
+            data-id="{{:id}}"
+            data-toggle="tooltip" data-original-title="@Translate("Versions & Updates")">
+        <i class="fa fa-list"></i>
+    </button>
+</script>
+
+<script id="tmp-name" type="text/x-jsrender">
+    <span>{{:name}}</span>
+</script>
+<script id="tmp-module-creation-time" type="text/x-jsrender">
+    <span>{{*: Utils.formatDateTime(data.creationTime)}}</span>
+</script>
+
+<script id="tmp-set-module" type="text/x-jsrender">
+    <div class="row set-module-form" id="set-module-form">
+        <input type="hidden" name="Id" value="{{:id}}" /> 
+         <div class="col-12">
+            <div class="form-group">
+                <label>Version</label>
+                 <select class="form-control" id="app-system-id" name="AppSystemId">
+                     <option value="">Choose System</option>
+                     {{for appSystems}}
+                     <option value="{{:id}}">{{:name}}</option>
+                     {{/for}}
+                 </select>
+            </div>
+        </div>
+        <div class="col-12">
+            <div class="form-group">
+                <label>Module Name</label>
+                <input type="text" name="Name" required placeholder="@Translate("Module Name")"
+                       class="form-control" value="{{:name}}">
+            </div>
+        </div>
+    </div>
+</script>
+
+<script id="tmp-set-module-log" type="text/x-jsrender">
+    <div class="row set-module-log-form" id="set-module-log-form">
+        <input type="hidden" name="Id" value="{{:id}}" />
+        <input type="hidden" name="appModuleId" value="{{:appModuleId}}" />
+         <div class="col-12">
+            <div class="form-group">
+                <label>New Version</label>
+                <input type="text" readonly  class="form-control" value="{{:newVersion}}">
+            </div>
+        </div>
+        <div class="col-12">
+            <div class="form-group">
+                <label>Changes</label>
+                <textarea type="text" name="Description" required placeholder="@Translate("Description")" rows="10"
+                       class="form-control" value="{{:description}}"></textarea>
+            </div>
+        </div>
+    </div>
+</script>
+
+<script id="tmp-set-module-update" type="text/x-jsrender">
+    <div class="row set-module-update-form" id="set-module-update-form">
+        <input type="hidden" name="Id" value="{{:id}}" />
+        <input type="hidden" name="appModuleId" value="{{:appModuleId}}" />
+         <div class="col-12">
+            <div class="form-group">
+                <label>Current Version</label>
+                <input type="text" readonly  class="form-control" value="{{:versionText}}">
+            </div>
+        </div>
+         <div class="col-12">
+            <div class="form-group">
+                <label>New Update</label>
+                <input type="text" readonly  class="form-control" value="{{:newUpdate}}">
+            </div>
+        </div>
+        <div class="col-12">
+            <div class="form-group">
+                <label>Changes</label>
+                <textarea type="text" name="Description" required placeholder="@Translate("Description")" rows="10"
+                       class="form-control" value="{{:description}}"></textarea>
+            </div>
+        </div>
+    </div>
+</script>
+
+
+
+<script id="tmp-module-versions" type="text/x-jsrender">
+    <div class="row module-versions-form" id="module-versions-form">
+        <input type="hidden" name="Id" value="{{:id}}" />
+         <div class="col-6">
+            <div class="form-group">
+                <label>Version</label>
+                 <select class="form-control" id="module-log-version">
+                     <option value="">Choose Version</option>
+                     {{for versions}}
+                     <option value="{{:versionIndex}}">{{:versionText}}</option>
+                     {{/for}}
+                 </select>
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="form-group">
+                <label>Update</label>
+                 <select class="form-control" id="module-version-update">
+                     <option value="">Choose Update</option>
+                      
+                 </select>
+            </div>
+        </div>
+        <div class="col-12">
+            <div class="form-group">
+                <label>Changes</label>
+                <textarea type="text" name="Description" id="version-description" required placeholder="@Translate("Description")" rows="10"
+                       class="form-control" value="{{:description}}"></textarea>
+            </div>
+        </div>
+    </div>
+</script>
+
+
+
+@section Scripts
+    {
+
+    <script src="~/js/app/modules.js" asp-append-version="true"></script>
+}

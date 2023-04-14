@@ -1,0 +1,265 @@
+﻿
+<!doctype html>
+<html class="no-js h-100" lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title> Management Panel - @ViewBag.PageTitle</title>
+    <meta name="description" content="Management Panel">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="~/assets/libs/fontawesome/all.css" rel="stylesheet">
+    <link href="~/assets/libs/google-fonts/icon.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" />
+
+    <link href="~/assets/libs/waitMe/waitMe.min.css" rel="stylesheet" />
+    <link href="~/assets/libs/toastr/toastr.min.css" rel="stylesheet" />
+
+    <link rel="stylesheet" href="~/assets/libs/bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" id="main-stylesheet" data-version="1.1.0" href="~/assets/styles/shards-dashboards.1.1.0.min.css">
+    <link rel="stylesheet" href="~/assets/styles/extras.1.1.0.min.css">
+    <link rel="stylesheet" href="~/css/general.css" />
+    <link rel="stylesheet" type="text/css" href="~/assets/vendors/css/tables/datatable/datatables.min.css">
+    <link rel="stylesheet" type="text/css" href="~/assets/vendors/css/tables/datatable/extensions/dataTables.checkboxes.css">
+    <link rel="stylesheet" type="text/css" href="~/assets/vendors/css/tables/datatable/responsive.bootstrap.min.css">
+
+    <link rel="stylesheet" type="text/css" href="/assets/vendors/css/pickers/pickadate/pickadate.css">
+    @RenderSection("Styles", required: false)
+</head>
+<body class="h-100">
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Main Sidebar -->
+            <aside class="main-sidebar col-12 col-md-3 col-lg-2 px-0">
+                <div class="main-navbar">
+                    <nav class="navbar align-items-stretch navbar-light bg-white flex-md-nowrap border-bottom p-0">
+                        <a class="navbar-brand w-100 mr-0" href="#" style="line-height: 25px;">
+                            <div class="d-table m-auto">
+                                <img id="main-logo" class="d-inline-block align-top mr-1" style="max-width: 25px;" src="~/assets/images/shards-dashboards-logo.svg" alt="E">
+                                <span class="d-none d-md-inline ml-1">Management Dashboard</span>
+                            </div>
+                        </a>
+                        <a class="toggle-sidebar d-sm-inline d-md-none d-lg-none">
+                            <i class="material-icons">&#xE5C4;</i>
+                        </a>
+                    </nav>
+                </div>
+                <form action="#" class="main-sidebar__search w-100 border-right d-sm-flex d-md-none d-lg-none">
+                    <div class="input-group input-group-seamless ml-3">
+                        <div class="input-group-prepend">
+                            <div class="input-group-text">
+                                <i class="fas fa-search"></i>
+                            </div>
+                        </div>
+                        <input class="navbar-search form-control" type="text" placeholder="Search for something..." aria-label="Search">
+                    </div>
+                </form>
+                <div class="nav-wrapper">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/">
+                                <i class="material-icons">dashboard</i>
+                                <span>Dashboard</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link " href="/app/systems">
+                                <i class="material-icons">miscellaneous_services</i>
+                                <span>Systems</span>
+                            </a>
+                        </li>
+
+
+                        <li class="nav-item">
+                            <a class="nav-link " href="/app/modules">
+                                <i class="material-icons">api</i>
+                                <span>Modules</span>
+                            </a>
+                        </li>
+
+                      
+                    </ul>
+                </div>
+            </aside>
+            <!-- End Main Sidebar -->
+            <main class="main-content col-lg-10 col-md-9 col-sm-12 p-0 offset-lg-2 offset-md-3">
+                <div class="main-navbar sticky-top bg-white">
+                    <!-- Main Navbar -->
+                    <nav class="navbar align-items-stretch navbar-light flex-md-nowrap p-0">
+                        <form action="#" class="main-navbar__search w-100 d-none d-md-flex d-lg-flex">
+                            <div class="input-group input-group-seamless ml-3">
+                                <div class="input-group-prepend">
+                                    <div class="input-group-text">
+                                        <i class="fas fa-search"></i>
+                                    </div>
+                                </div>
+                                <input class="navbar-search form-control" type="text" placeholder="Search for something..." aria-label="Search">
+                            </div>
+                        </form>
+                        <ul class="navbar-nav border-left flex-row ">
+                            <li class="nav-item border-right dropdown notifications">
+                                <a class="nav-link nav-link-icon text-center" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <div class="nav-link-icon__wrapper">
+                                        <i class="material-icons">&#xE7F4;</i>
+                                        <span class="badge badge-pill badge-danger">0</span>
+                                    </div>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-small" aria-labelledby="dropdownMenuLink"> 
+                                </div>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-nowrap px-3" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                                    <img class="user-avatar rounded-circle mr-2" src="~/assets/images/avatars/1.jpg" alt="User Avatar">
+                                    <span class="d-none d-md-inline-block">@CurrentUser.FullName</span>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-small"> 
+                                    <a class="dropdown-item text-danger" href="/user/logout">
+                                        <i class="material-icons text-danger">&#xE879;</i> Logout
+                                    </a>
+                                </div>
+                            </li>
+                        </ul>
+                        <nav class="nav">
+                            <a href="#" class="nav-link nav-link-icon toggle-sidebar d-md-inline d-lg-none text-center border-left" data-toggle="collapse" data-target=".header-navbar" aria-expanded="false" aria-controls="header-navbar">
+                                <i class="material-icons">&#xE5D2;</i>
+                            </a>
+                        </nav>
+                    </nav>
+                </div>
+                <!-- / .main-navbar -->
+                <div class="main-content-container container-fluid px-4">
+                    <!-- Page Header -->
+                    <div class="page-header row no-gutters py-4">
+                        <div class="col-12 col-sm-4 text-center text-sm-left mb-0">
+                            <h4 class="page-title">@ViewBag.PageTitle</h4>
+                        </div>
+                    </div>
+                    <!-- End Page Header -->
+                    <!-- Main Content -->
+                    @RenderBody()
+                    <!-- End Main Content -->
+                </div>
+                <footer class="main-footer d-flex p-2 px-3 bg-white border-top">
+                    <ul class="nav">
+                    </ul>
+                    <span class="copyright ml-auto my-auto mr-2">
+                        Copyright © @DateTime.Today.Year
+                        <a href="https://www.datatech-int.com/" target="_blank" rel="nofollow">DataTech</a>
+                    </span>
+                </footer>
+            </main>
+        </div>
+    </div>
+   
+    <script src="~/assets/libs/jquery/jquery-3.3.1.min.js"></script>
+    <script src="~/assets/libs/popper/popper.min.js"></script>
+    <script src="~/assets/libs/bootstrap/bootstrap.min.js"></script>
+    <script src="~/assets/libs/buttons/buttons.js"></script>
+    <script src="~/assets/libs/chartjs/Chart.min.js"></script>
+    <script src="~/assets/libs/shards/shards.min.js"></script>
+    <script src="~/assets/libs/jquery-sharrre/jquery.sharrre.min.js"></script>
+
+    <script src="~/assets/libs/toastr/toastr.min.js"></script>
+    <script src="~/assets/libs/waitMe/waitMe.min.js"></script>
+    <script src="~/assets/libs/jsrender/jsrender.min.js"></script>
+
+    <script src="~/assets/scripts/extras.1.1.0.min.js"></script>
+    <script src="~/assets/scripts/shards-dashboards.1.1.0.min.js"></script>
+
+    <script src="~/js/global/utils.js"></script>
+    <script src="~/js/global/component.js"></script>
+    <script src="~/js/global/general.js"></script> 
+    <script src="~/assets/vendors/js/tables/datatable/datatables.min.js"></script>
+    <script src="~/assets/vendors/js/tables/datatable/dataTables.bootstrap4.min.js"></script>
+    <script src="~/assets/vendors/js/tables/datatable/datatables.checkboxes.min.js"></script>
+    <script src="~/assets/vendors/js/tables/datatable/dataTables.responsive.min.js"></script>
+    <script src="~/assets/vendors/js/tables/datatable/responsive.bootstrap.min.js"></script>
+    <script src="/assets/vendors/js/pickers/pickadate/picker.js"></script>
+    <script src="/assets/vendors/js/pickers/pickadate/picker.date.js"></script>
+    @RenderSection("Scripts", required: false)
+    <script id="tmp-alert-border" type="text/x-jsrender">
+        <div class="alert border-{{:type}} alert-dismissible mb-2" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">×</span>
+            </button>
+            <div class="d-flex align-items-center">
+                <i class="bx bx-error"></i>
+                <span>
+                    {{:message}}
+                </span>
+            </div>
+        </div>
+    </script>
+
+
+    <script id="tmp-confirm-model" type="text/x-jsrender">
+        <div class="modal fade text-left" id="confirm-modal" tabindex="-1" role="dialog"
+             aria-labelledby="myModalLabel110" aria-hidden="true">
+
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+                <div class="modal-content">
+                    <div class="modal-header bg-{{:type}}">
+                        <h5 class="modal-title text-white" id="myModalLabel110">{{:title}}</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <i class="bx bx-x"></i>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        {{:message}}
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-light-secondary btn-cancel" data-dismiss="modal">
+                            <i class="bx bx-x d-block d-sm-none"></i>
+                            <span class="d-none d-sm-block">{{:cancel}}</span>
+                        </button>
+
+                        <button type="button" class="btn btn-{{:type}} ml-1 btn-ok" data-dismiss="modal">
+                            <i class="bx bx-check d-block d-sm-none"></i>
+                            <span class="d-none d-sm-block">{{:ok}}</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </script>
+
+    <script id="tmp-management-modal" type="text/x-jsrender">
+
+        <div class="modal fade text-left" id="management-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" aria-hidden="true">
+            <div class="modal-dialog {{if dialogClass}} {{:dialogClass}} {{else}} modal-lg {{/if}}modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="myModalLabel1">{{:title}}</h5>
+                        <button type="button" class="modal-close close rounded-pill" data-dismiss="modal" aria-label="Kapat">
+                            <i class="fa fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        {{:body}}
+                    </div>
+                    {{if buttons.length > 0}}
+                    <div class="modal-footer">
+                        {{for buttons}}
+                        <button type="button" class="btn btn-{{:style}} {{:class}}" {{if disabled =="true"}} disabled {{/if}}
+                                {{for attr}}
+                                {{:name}}="{{:val}}"
+                                {{/for}}
+                                {{if close}}
+                                data-dismiss="modal" {{/if}}>
+                            {{if icon}}
+                            <i class="fa fa-{{:icon}}"></i>
+                            {{/if}}
+                            {{:title}}
+
+                        </button>
+                        {{/for}}
+                    </div>
+                    {{/if}}
+                </div>
+            </div>
+        </div>
+
+    </script>
+
+</body>
+</html>
