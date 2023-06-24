@@ -1,5 +1,6 @@
 ﻿using DataTech.System.Versioning.Models.Common;
 using DataTech.System.Versioning.Models.Domain;
+using DataTech.System.Versioning.Models.Dto.System;
 using System.Threading.Tasks;
 
 namespace DataTech.System.Versioning.Repositories
@@ -15,5 +16,8 @@ namespace DataTech.System.Versioning.Repositories
         Task<OperationResult<AppSystem>> GetWihLogs(Query<AppSystem> query);
         Task<OperationResult<AppSystemLog>> AddNewRelease(Query<AppSystemLog> query);
         Task<OperationResult<AppSystemLog>> EditRelease(Query<AppSystemLog> query);
+
+
+        Task<OperationResult<AppSystem>> GetByName(Query<GetSystemVersionRequest> query);
     }
 }

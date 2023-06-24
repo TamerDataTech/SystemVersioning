@@ -1,5 +1,6 @@
 ﻿using DataTech.System.Versioning.Models.Common;
 using DataTech.System.Versioning.Models.Domain;
+using DataTech.System.Versioning.Models.Dto.System;
 using System.Threading.Tasks;
 
 namespace DataTech.System.Versioning.Services
@@ -18,5 +19,6 @@ namespace DataTech.System.Versioning.Services
 
 
 
+        Task<OperationResult<AppSystem>> GetByName(Query<GetSystemVersionRequest> query);
     }
 }

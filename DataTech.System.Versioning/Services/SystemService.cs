@@ -1,6 +1,7 @@
 ﻿using DataTech.System.Versioning.Extensions;
 using DataTech.System.Versioning.Models.Common;
 using DataTech.System.Versioning.Models.Domain;
+using DataTech.System.Versioning.Models.Dto.System;
 using DataTech.System.Versioning.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -243,6 +244,34 @@ namespace DataTech.System.Versioning.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error editing release {@query}", query);
+                result.PrepareExceptionResult(ex);
+            }
+            return result;
+        }
+
+        public async Task<OperationResult<AppSystem>> GetByName(Query<GetSystemVersionRequest> query)
+        {
+            var result = new OperationResult<AppSystem>();
+            try
+            {
+                if (query == null || query.Parameter == null)
+                {
+                    result.PrepareMissingParameterResult("Parameter");
+                    return result;
+                }
+
+                if (query.Parameter.Name.IsEmpty())
+                {
+                    result.PrepareMissingParameterResult("Name");
+                    return result;
+                } 
+
+                return await _repository.GetByName(query);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting by name {@query}", query);
                 result.PrepareExceptionResult(ex);
             }
             return result;

@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Mvc;
+using DataTech.System.Versioning.Models.Dto.System;
 
 namespace DataTech.System.Versioning.Repositories
 {
@@ -319,7 +320,7 @@ namespace DataTech.System.Versioning.Repositories
 
                 await _context.AppSystemLogs.AddAsync(log);
 
-                await _context.SaveChangesAsync(); 
+                await _context.SaveChangesAsync();
 
                 result.Result = true;
                 result.Response = log;
@@ -372,6 +373,46 @@ namespace DataTech.System.Versioning.Repositories
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error editing release log {@query}", query);
+                result.PrepareExceptionResult(ex);
+            }
+            return result;
+        }
+
+        public async Task<OperationResult<AppSystem>> GetByName(Query<GetSystemVersionRequest> query)
+        {
+            var result = new OperationResult<AppSystem>();
+            try
+            {
+                if (query == null || query.Parameter == null)
+                {
+                    result.PrepareMissingParameterResult("Parameter");
+                    return result;
+                }
+
+                if (query.Parameter.Name.IsEmpty())
+                {
+                    result.PrepareMissingParameterResult("Name");
+                    return result;
+                }
+
+                var respone = await _context.AppSystems
+                     .Include(x => x.Logs)
+                     .Include(x => x.Modules)
+                              .ThenInclude(y => y.Logs)
+                     .FirstOrDefaultAsync(x => x.Name == query.Parameter.Name &&
+                            (query.Parameter.ReleaseIndex < 1 || x.ReleaseIndex == query.Parameter.ReleaseIndex)); 
+
+
+                if (respone != null)
+                {
+                    result.Result = true;
+                    result.Response = respone;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting by Name {@query}", query);
                 result.PrepareExceptionResult(ex);
             }
             return result;
