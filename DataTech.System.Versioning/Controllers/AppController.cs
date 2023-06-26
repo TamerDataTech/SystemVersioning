@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Builder;
 using DataTech.System.Versioning.Services;
 using DataTech.System.Versioning.Models.Common;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using System.Linq;
 
 namespace DataTech.System.Versioning.Controllers
 {
@@ -39,7 +40,16 @@ namespace DataTech.System.Versioning.Controllers
                 query.Parameter = request ?? new AppSystem();
                 var result = await _systemService.Search(query);
 
-                return DTResult(options, result, result.Response);
+                var data = result.Response.Select(x => new
+                {
+                    x.Id,
+                    x.Name,
+                    x.CreationTime,
+                    x.ReleaseIndex,
+                    CurrentRelease = $"{x.ReleaseIndex}.{x.Modules?.Sum(x => x.VersionIndex).ToString().PadLeft(3, '0')}.{x.Modules?.Sum(x => x.EnhancementIndex).ToString().PadLeft(3, '0')}" 
+                });
+
+                return DTResult(options, result, data);
             }
             catch (Exception ex)
             {
@@ -109,7 +119,18 @@ namespace DataTech.System.Versioning.Controllers
                 query.Parameter = request ?? new AppModule();
                 var result = await _moduleService.Search(query);
 
-                return DTResult(options, result, result.Response);
+                var data = result.Response.Select(x => new
+                {
+                    x.Id,
+                    x.Name,
+                    x.CreationTime,
+                    x.VersionIndex,
+                    x.EnhancementIndex,
+                    x.FixIndex,
+                    CurrentVersion = $"{x.VersionIndex}.{x.EnhancementIndex.ToString().PadLeft(3, '0')}.{x.FixIndex.ToString().PadLeft(3, '0')}"
+                });
+
+                return DTResult(options, result, data);
             }
             catch (Exception ex)
             {
@@ -141,10 +162,16 @@ namespace DataTech.System.Versioning.Controllers
         {
             return Ok(await _moduleService.AddNewVersion(new Query<AppModuleLog>(request)));
         }
-        public async Task<IActionResult> AddNewUpdate(AppModuleLog request)
+        public async Task<IActionResult> AddNewEnhancement(AppModuleLog request)
         {
-            return Ok(await _moduleService.AddNewUpdate(new Query<AppModuleLog>(request)));
+            return Ok(await _moduleService.AddNewEnhancement(new Query<AppModuleLog>(request)));
         }
+
+        public async Task<IActionResult> AddNewFix(AppModuleLog request)
+        {
+            return Ok(await _moduleService.AddNewFix(new Query<AppModuleLog>(request)));
+        }
+
         public async Task<IActionResult> EditVersion(AppModuleLog request)
         {
             return Ok(await _moduleService.EditVersion(new Query<AppModuleLog>(request)));

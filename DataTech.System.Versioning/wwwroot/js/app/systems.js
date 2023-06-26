@@ -378,7 +378,7 @@ var Systems = function () {
                     { 
                         "name": "releaseIndex",
                         "className": "text-center", "render": function (data, type, full, meta) {
-                            return full.releaseIndex.padLeftZero(3);
+                            return full.currentRelease;
                         }
                     }, 
                     {

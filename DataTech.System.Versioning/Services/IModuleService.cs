@@ -15,8 +15,13 @@ namespace DataTech.System.Versioning.Services
         Task<OperationResult<AppModule>> GetWihLogs(Query<AppModule> query);
         Task<OperationResult<AppModuleLog>> AddNewVersion(Query<AppModuleLog> query);
         Task<OperationResult<AppModuleLog>> EditVersion(Query<AppModuleLog> query);
-        Task<OperationResult<AppModuleLog>> AddNewUpdate(Query<AppModuleLog> query);
-        Task<OperationResult<AppModuleLog>> EditUpdate(Query<AppModuleLog> query);
+        //Task<OperationResult<AppModuleLog>> AddNewUpdate(Query<AppModuleLog> query);
+        //Task<OperationResult<AppModuleLog>> EditUpdate(Query<AppModuleLog> query); 
+
+        Task<OperationResult<AppModuleLog>> AddNewEnhancement(Query<AppModuleLog> query);
+        Task<OperationResult<AppModuleLog>> AddNewFix(Query<AppModuleLog> query);
+        Task<OperationResult<AppModuleLog>> EditEnhancement(Query<AppModuleLog> query);
+        Task<OperationResult<AppModuleLog>> EditFix(Query<AppModuleLog> query);
 
     }
 }

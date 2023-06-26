@@ -11,6 +11,8 @@ using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Mvc;
 using DataTech.System.Versioning.Models.Dto.System;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using System.Web.Http.Results;
 
 namespace DataTech.System.Versioning.Repositories
 {
@@ -166,6 +168,7 @@ namespace DataTech.System.Versioning.Repositories
                 }
 
                 var appSystems = _context.AppSystems
+                                    .Include(x => x.Modules) 
                                     .Where(a => !a.Deleted)
                                     .Select(a => a);
 
@@ -322,6 +325,8 @@ namespace DataTech.System.Versioning.Repositories
 
                 await _context.SaveChangesAsync();
 
+                await UpdateAppIndexer(getApp);
+
                 result.Result = true;
                 result.Response = log;
 
@@ -332,6 +337,32 @@ namespace DataTech.System.Versioning.Repositories
                 result.PrepareExceptionResult(ex);
             }
             return result;
+        }
+
+        private async Task UpdateAppIndexer(AppSystem appSystem)
+        {
+            try
+            {
+                var allIndexers = await _context.AppIndexers.Where(x => x.AppSystemId == appSystem.Id).ToListAsync();
+
+                if (allIndexers.Count > 0)
+                {
+                    foreach (var indexer in allIndexers)
+                    {
+                        indexer.ReleaseIndex = appSystem.ReleaseIndex;
+                        indexer.VersionIndex = 1;
+                        indexer.EnhancementIndex = 0;
+                        indexer.FixIndex = 0;
+                    }
+
+                    _context.UpdateRange(allIndexers);
+                    await _context.SaveChangesAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating indexer {@appSystem}", appSystem);
+            }
         }
 
         public async Task<OperationResult<AppSystemLog>> EditRelease(Query<AppSystemLog> query)
@@ -400,7 +431,7 @@ namespace DataTech.System.Versioning.Repositories
                      .Include(x => x.Modules)
                               .ThenInclude(y => y.Logs)
                      .FirstOrDefaultAsync(x => x.Name == query.Parameter.Name &&
-                            (query.Parameter.ReleaseIndex < 1 || x.ReleaseIndex == query.Parameter.ReleaseIndex)); 
+                            (query.Parameter.ReleaseIndex < 1 || x.ReleaseIndex == query.Parameter.ReleaseIndex));
 
 
                 if (respone != null)

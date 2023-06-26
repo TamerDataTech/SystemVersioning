@@ -19,6 +19,44 @@ namespace DataTech.System.Versioning.Migrations
                 .HasAnnotation("ProductVersion", "5.0.17")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+            modelBuilder.Entity("DataTech.System.Versioning.Models.Domain.AppIndexer", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AppModuleId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AppSystemId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("CreationTime")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("EnhancementIndex")
+                        .HasColumnType("int");
+
+                    b.Property<int>("FixIndex")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ReleaseIndex")
+                        .HasColumnType("int");
+
+                    b.Property<int>("VersionIndex")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AppIndexers");
+                });
+
             modelBuilder.Entity("DataTech.System.Versioning.Models.Domain.AppModule", b =>
                 {
                     b.Property<Guid>("Id")
@@ -37,10 +75,16 @@ namespace DataTech.System.Versioning.Migrations
                     b.Property<bool>("Deleted")
                         .HasColumnType("bit");
 
+                    b.Property<int>("EnhancementIndex")
+                        .HasColumnType("int");
+
+                    b.Property<int>("FixIndex")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("UpdateIndex")
+                    b.Property<int>("ReleaseIndex")
                         .HasColumnType("int");
 
                     b.Property<int>("VersionIndex")
@@ -74,7 +118,13 @@ namespace DataTech.System.Versioning.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("UpdateIndex")
+                    b.Property<int>("EnhancementIndex")
+                        .HasColumnType("int");
+
+                    b.Property<int>("FixIndex")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ReleaseIndex")
                         .HasColumnType("int");
 
                     b.Property<int>("VersionIndex")

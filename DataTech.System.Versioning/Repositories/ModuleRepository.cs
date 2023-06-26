@@ -53,8 +53,44 @@ namespace DataTech.System.Versioning.Repositories
                     return result;
                 }
 
-                await _context.AppModules.AddAsync(query.Parameter);
+                var appSystem = await _context.AppSystems.FirstOrDefaultAsync(x => x.Id == query.Parameter.AppSystemId);
+
+                if (check != null)
+                {
+                    result.PrepareNotFoundResult("System");
+                    return result;
+                }
+
+                query.Parameter.VersionIndex = appSystem.ReleaseIndex; 
+                query.Parameter.VersionIndex = 1;
+
+                await _context.AppModules.AddAsync(query.Parameter);  
                 await _context.SaveChangesAsync();
+
+                var log = new AppModuleLog
+                { 
+                    AppModuleId = query.Parameter.Id,
+                    Description = "",
+                    VersionIndex = query.Parameter.VersionIndex,
+                    EnhancementIndex = query.Parameter.EnhancementIndex,
+                    FixIndex = query.Parameter.FixIndex
+                }; 
+                await _context.AppModuleLogs.AddAsync(log); 
+
+                // Add Indexer
+                var indexer = new AppIndexer
+                {
+                    AppSystemId = appSystem.Id,
+                    AppModuleId =   query.Parameter.Id, 
+                    ReleaseIndex = appSystem.ReleaseIndex,
+                    VersionIndex = query.Parameter.VersionIndex,
+                    EnhancementIndex = 0,
+                    FixIndex = 0
+                };
+                await _context.AppIndexers.AddAsync(indexer);
+
+                await _context.SaveChangesAsync();
+
                 result.Result = true;
                 result.Response = query.Parameter;
 
@@ -286,7 +322,8 @@ namespace DataTech.System.Versioning.Repositories
                 {
                     result.PrepareMissingParameterResult("AppModuleId");
                     return result;
-                }
+                } 
+
 
                 var getApp = await _context.AppModules.FirstOrDefaultAsync(x => x.Id == query.Parameter.AppModuleId);
 
@@ -294,10 +331,14 @@ namespace DataTech.System.Versioning.Repositories
                 {
                     result.PrepareNotFoundResult();
                     return result;
-                }
+                } 
+ 
+                var indexer = await GetCurrentModuleIndexer(query.Parameter.AppModuleId); 
 
-                getApp.VersionIndex++;
-                getApp.UpdateIndex = 0;
+                getApp.ReleaseIndex = indexer.ReleaseIndex;
+                getApp.VersionIndex = indexer.VersionIndex + 1;
+                getApp.EnhancementIndex = 0;
+                getApp.FixIndex = 0;
                 _context.AppModules.Update(getApp);
 
                 var log = new AppModuleLog
@@ -305,10 +346,15 @@ namespace DataTech.System.Versioning.Repositories
                     AppModuleId = query.Parameter.AppModuleId,
                     Description = query.Parameter.Description,
                     VersionIndex = getApp.VersionIndex,
-                    UpdateIndex = getApp.UpdateIndex
+                    EnhancementIndex = getApp.EnhancementIndex,
+                    FixIndex = getApp.FixIndex
                 };
 
                 await _context.AppModuleLogs.AddAsync(log);
+
+
+
+
 
                 await _context.SaveChangesAsync();
 
@@ -321,6 +367,12 @@ namespace DataTech.System.Versioning.Repositories
                 result.PrepareExceptionResult(ex);
             }
             return result;
+        }
+
+
+        private async Task<AppIndexer> GetCurrentModuleIndexer(Guid appModuleId)
+        {
+            return await _context.AppIndexers.FirstOrDefaultAsync(z=> z.AppModuleId == appModuleId);
         }
 
         public async Task<OperationResult<AppModuleLog>> EditVersion(Query<AppModuleLog> query)
@@ -367,7 +419,7 @@ namespace DataTech.System.Versioning.Repositories
             return result;
         }
 
-        public async Task<OperationResult<AppModuleLog>> AddNewUpdate(Query<AppModuleLog> query)
+        public async Task<OperationResult<AppModuleLog>> AddNewEnhancement(Query<AppModuleLog> query)
         {
             var result = new OperationResult<AppModuleLog>();
             try
@@ -392,18 +444,28 @@ namespace DataTech.System.Versioning.Repositories
                     return result;
                 }
 
-                getApp.UpdateIndex++; 
+                var indexer = await GetCurrentModuleIndexer(query.Parameter.AppModuleId);
+
+                getApp.ReleaseIndex = indexer.ReleaseIndex;
+                getApp.VersionIndex = indexer.VersionIndex;
+                getApp.EnhancementIndex = indexer.EnhancementIndex + 1;
+                getApp.FixIndex = 0;
+
                 _context.AppModules.Update(getApp);
 
                 var log = new AppModuleLog
                 {
                     AppModuleId = query.Parameter.AppModuleId,
                     Description = query.Parameter.Description,
+                    ReleaseIndex = getApp.ReleaseIndex,
                     VersionIndex = getApp.VersionIndex,
-                    UpdateIndex = getApp.UpdateIndex
+                    EnhancementIndex = getApp.EnhancementIndex,
+                    FixIndex = getApp.FixIndex
                 };
-
                 await _context.AppModuleLogs.AddAsync(log);
+
+                indexer.EnhancementIndex++; 
+                _context.Update(indexer);
 
                 await _context.SaveChangesAsync();
 
@@ -418,7 +480,73 @@ namespace DataTech.System.Versioning.Repositories
             return result;
         }
 
-        public async Task<OperationResult<AppModuleLog>> EditUpdate(Query<AppModuleLog> query)
+        public async Task<OperationResult<AppModuleLog>> AddNewFix(Query<AppModuleLog> query)
+        {
+            var result = new OperationResult<AppModuleLog>();
+            try
+            {
+                if (query == null || query.Parameter == null)
+                {
+                    result.PrepareMissingParameterResult("Parameter");
+                    return result;
+                }
+
+                if (query.Parameter.AppModuleId == Guid.Empty)
+                {
+                    result.PrepareMissingParameterResult("AppModuleId");
+                    return result;
+                }
+
+                var getApp = await _context.AppModules.FirstOrDefaultAsync(x => x.Id == query.Parameter.AppModuleId);
+
+                if (getApp == null)
+                {
+                    result.PrepareNotFoundResult();
+                    return result;
+                }
+
+                var indexer = await GetCurrentModuleIndexer(query.Parameter.AppModuleId);
+
+                getApp.ReleaseIndex = indexer.ReleaseIndex;
+                getApp.VersionIndex = indexer.VersionIndex;
+                getApp.EnhancementIndex = indexer.EnhancementIndex;
+                getApp.FixIndex = indexer.FixIndex + 1;
+
+                _context.AppModules.Update(getApp);
+
+                var log = new AppModuleLog
+                {
+                    AppModuleId = query.Parameter.AppModuleId,
+                    Description = query.Parameter.Description,
+                    ReleaseIndex = getApp.ReleaseIndex,
+                    VersionIndex = getApp.VersionIndex,
+                    EnhancementIndex = getApp.EnhancementIndex,
+                    FixIndex = getApp.FixIndex
+                };
+                await _context.AppModuleLogs.AddAsync(log);
+
+                indexer.FixIndex++;
+                _context.Update(indexer);
+
+                await _context.SaveChangesAsync();
+
+                result.Result = true;
+                result.Response = log;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error adding new update {@query}", query);
+                result.PrepareExceptionResult(ex);
+            }
+            return result;
+        }
+
+        public async Task<OperationResult<AppModuleLog>> EditEnhancement(Query<AppModuleLog> query)
+        {
+            return await EditVersion(query);
+        }
+
+        public async Task<OperationResult<AppModuleLog>> EditFix(Query<AppModuleLog> query)
         {
             return await EditVersion(query);
         }

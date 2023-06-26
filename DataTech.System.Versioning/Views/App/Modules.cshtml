@@ -31,8 +31,7 @@
             <thead>
                 <tr role="row">
                     <th>@Translate("Name")</th>
-                    <th>@Translate("Current Version")</th>
-                    <th>@Translate("Current Update")</th> 
+                    <th>@Translate("Current Version")</th> 
                     <th>@Translate("Creation Time")</th>
                     <th>@Translate("Actions")</th>
                 </tr>
@@ -57,16 +56,21 @@
             data-toggle="tooltip" data-original-title="@Translate("New Version")">
         <i class="fa fa-plus"></i>
     </button>
-     <button type="button" class="btn btn-xs btn-icon btn-info new-update-module"
-            data-id="{{:id}}" data-version="{{:versionIndex}}"  data-update="{{:updateIndex}}"
-            data-toggle="tooltip" data-original-title="@Translate("New Update")">
+     <button type="button" class="btn btn-xs btn-icon btn-info new-enhancement-module"
+            data-id="{{:id}}" data-version="{{:versionIndex}}"  data-enhancement="{{:enhancementIndex}}"
+            data-toggle="tooltip" data-original-title="@Translate("New Enhancement")">
         <i class="fa fa-plus-square"></i>
     </button>
-     <button type="button" class="btn btn-xs btn-icon btn-secondary show-versions"
-            data-id="{{:id}}"
-            data-toggle="tooltip" data-original-title="@Translate("Versions & Updates")">
-        <i class="fa fa-list"></i>
+      <button type="button" class="btn btn-xs btn-icon btn-warning new-fix-module"
+            data-id="{{:id}}" data-version="{{:versionIndex}}"  data-enhancement="{{:enhancementIndex}}" data-fix="{{:fixIndex}}"
+            data-toggle="tooltip" data-original-title="@Translate("New Fix")">
+        <i class="fa fa-plus-circle"></i>
     </button>
+    @* <button type="button" class="btn btn-xs btn-icon btn-secondary show-versions"
+            data-id="{{:id}}"
+            data-toggle="tooltip" data-original-title="@Translate("Versions, Enhancements & Fixes")">
+        <i class="fa fa-list"></i>
+    </button>*@
 </script>
 
 <script id="tmp-name" type="text/x-jsrender">
@@ -120,8 +124,8 @@
     </div>
 </script>
 
-<script id="tmp-set-module-update" type="text/x-jsrender">
-    <div class="row set-module-update-form" id="set-module-update-form">
+<script id="tmp-set-module-enhancement" type="text/x-jsrender">
+    <div class="row set-module-enhancement-form" id="set-module-enhancement-form">
         <input type="hidden" name="Id" value="{{:id}}" />
         <input type="hidden" name="appModuleId" value="{{:appModuleId}}" />
          <div class="col-12">
@@ -132,8 +136,8 @@
         </div>
          <div class="col-12">
             <div class="form-group">
-                <label>New Update</label>
-                <input type="text" readonly  class="form-control" value="{{:newUpdate}}">
+                <label>New Enhancement</label>
+                <input type="text" readonly  class="form-control" value="{{:newEnhancement}}">
             </div>
         </div>
         <div class="col-12">
@@ -146,6 +150,39 @@
     </div>
 </script>
 
+
+<script id="tmp-set-module-fix" type="text/x-jsrender">
+    <div class="row set-module-fix-form" id="set-module-fix-form">
+        <input type="hidden" name="Id" value="{{:id}}" />
+        <input type="hidden" name="appModuleId" value="{{:appModuleId}}" />
+         <div class="col-12">
+            <div class="form-group">
+                <label>Current Version</label>
+                <input type="text" readonly  class="form-control" value="{{:versionText}}">
+            </div>
+        </div>
+       
+         <div class="col-12">
+            <div class="form-group">
+                <label>Current Enhancement</label>
+                <input type="text" readonly  class="form-control" value="{{:enhancementText}}">
+            </div>
+        </div>
+         <div class="col-12">
+            <div class="form-group">
+                <label>New Fix</label>
+                <input type="text" readonly  class="form-control" value="{{:newFix}}">
+            </div>
+        </div>
+        <div class="col-12">
+            <div class="form-group">
+                <label>Changes</label>
+                <textarea type="text" name="Description" required placeholder="@Translate("Description")" rows="10"
+                       class="form-control" value="{{:description}}"></textarea>
+            </div>
+        </div>
+    </div>
+</script> 
 
 
 <script id="tmp-module-versions" type="text/x-jsrender">
@@ -164,10 +201,19 @@
         </div>
         <div class="col-6">
             <div class="form-group">
-                <label>Update</label>
-                 <select class="form-control" id="module-version-update">
-                     <option value="">Choose Update</option>
+                <label>Enhancement</label>
+                 <select class="form-control" id="module-version-enhancement">
+                     <option value="">Choose Enhancement</option>
                       
+                 </select>
+            </div>
+        </div>
+         <div class="col-6">
+            <div class="form-group">
+                <label>Fix</label>
+                 <select class="form-control" id="module-version-fix">
+                     <option value="">Choose Fix</option>
+
                  </select>
             </div>
         </div>

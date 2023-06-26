@@ -247,7 +247,7 @@ namespace DataTech.System.Versioning.Services
             return result;
         }
 
-        public async Task<OperationResult<AppModuleLog>> AddNewUpdate(Query<AppModuleLog> query)
+        public async Task<OperationResult<AppModuleLog>> AddNewEnhancement(Query<AppModuleLog> query)
         {
             var result = new OperationResult<AppModuleLog>();
             try
@@ -264,18 +264,46 @@ namespace DataTech.System.Versioning.Services
                     return result;
                 }
 
-                return await _repository.AddNewUpdate(query);
+                return await _repository.AddNewEnhancement(query);
 
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error adding update {@query}", query);
+                _logger.LogError(ex, "Error adding enhancement {@query}", query);
                 result.PrepareExceptionResult(ex);
             }
             return result;
         }
 
-        public async Task<OperationResult<AppModuleLog>> EditUpdate(Query<AppModuleLog> query)
+        public async Task<OperationResult<AppModuleLog>> AddNewFix(Query<AppModuleLog> query)
+        {
+            var result = new OperationResult<AppModuleLog>();
+            try
+            {
+                if (query == null || query.Parameter == null)
+                {
+                    result.PrepareMissingParameterResult("Parameter");
+                    return result;
+                }
+
+                if (query.Parameter.AppModuleId == Guid.Empty)
+                {
+                    result.PrepareMissingParameterResult("AppModuleId");
+                    return result;
+                }
+
+                return await _repository.AddNewFix(query);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error adding fix {@query}", query);
+                result.PrepareExceptionResult(ex);
+            }
+            return result;
+        }
+
+        public async Task<OperationResult<AppModuleLog>> EditEnhancement(Query<AppModuleLog> query)
         {
             var result = new OperationResult<AppModuleLog>();
             try
@@ -297,15 +325,49 @@ namespace DataTech.System.Versioning.Services
                     return result;
                 }
 
-                return await _repository.EditUpdate(query);
+                return await _repository.EditEnhancement(query);
 
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error editing update {@query}", query);
+                _logger.LogError(ex, "Error editing enhancement {@query}", query);
                 result.PrepareExceptionResult(ex);
             }
             return result;
         }
+
+        public async Task<OperationResult<AppModuleLog>> EditFix(Query<AppModuleLog> query)
+        {
+            var result = new OperationResult<AppModuleLog>();
+            try
+            {
+                if (query == null || query.Parameter == null)
+                {
+                    result.PrepareMissingParameterResult("Parameter");
+                    return result;
+                }
+
+                if (query.Parameter.Id == Guid.Empty)
+                {
+                    result.PrepareMissingParameterResult("Id");
+                    return result;
+                }
+                if (query.Parameter.Description.IsEmpty())
+                {
+                    result.PrepareMissingParameterResult("Description");
+                    return result;
+                }
+
+                return await _repository.EditFix(query);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error editing fix {@query}", query);
+                result.PrepareExceptionResult(ex);
+            }
+            return result;
+        }
+         
     }
 }

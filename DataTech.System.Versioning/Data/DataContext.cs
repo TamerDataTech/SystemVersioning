@@ -40,6 +40,7 @@ namespace DataTech.System.Versioning.Data
         public DbSet<AppSystemLog> AppSystemLogs { get; set; }
         public DbSet<AppModuleLog> AppModuleLogs { get; set; }
 
+        public DbSet<AppIndexer> AppIndexers { get; set; }
 
         #region SaveChanges overrides 
         public override int SaveChanges()

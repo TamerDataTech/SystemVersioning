@@ -26,11 +26,22 @@ namespace DataTech.System.Versioning.Models.Dto.System
         public List<VersionLog> Versions { get; set; }
     }
 
-    public class UpdateResponse
+    public class EnhancementResponse
     { 
-        public string Update { get; set; }
+        public string Version { get; set; }
         public string  Details { get; set; }
         public DateTime Date { get; set; }
+
+        public List<FixResponse> Fixes { get; set; }
+    }
+
+
+    public class FixResponse
+    { 
+        public string Version { get; set; }
+        public string Details { get; set; }
+        public DateTime Date { get; set; } 
+
     }
 
 
@@ -47,7 +58,7 @@ namespace DataTech.System.Versioning.Models.Dto.System
         public string Version { get; set; }
         public string Details { get; set; }
         public DateTime Date { get; set; }
-        public List<UpdateResponse> Updates { get; set; }
+        public List<EnhancementResponse> Enhancements { get; set; }
 
     }
 }
