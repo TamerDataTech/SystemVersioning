@@ -3,6 +3,7 @@ using DataTech.System.Versioning.Extensions;
 using DataTech.System.Versioning.Middleware;
 using DataTech.System.Versioning.Models.Domain;
 using DataTech.System.Versioning.Repositories;
+using DataTech.System.Versioning.Service.Db;
 using DataTech.System.Versioning.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
@@ -66,6 +67,8 @@ namespace DataTech.System.Versioning
                  config.Cookie.Name = "_Management_Login_";
                  config.LoginPath = "/user/login";
              });
+
+            services.AddTransient<DatabaseService>(); 
 
         }
 

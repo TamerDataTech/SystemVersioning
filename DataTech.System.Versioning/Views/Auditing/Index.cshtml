@@ -1,0 +1,145 @@
+﻿@{
+    SetTitle("Auditing");
+}
+
+<section class="az-list-wrapper">
+
+    <div class="mb-2">
+        <fieldset>
+            <legend>@Translate("Server")</legend>
+            <div class="row">
+
+                <div class="col-md-2">
+                    <input class="form-control" id="db-server" placeholder="@Translate("Db server e.g. (.), localhost")" />
+                </div>
+
+                <div class="col-md-2">
+                    <label for="">
+                        <input type="checkbox" id="db-windows-authentication" /> Use Windows Authentiction
+                    </label>
+                </div>
+
+                <div class="col-md-2">
+                    <input class="form-control" id="db-server-username" placeholder="@Translate("Db server usernmae ")" />
+                </div>
+
+                <div class="col-md-2">
+                    <input class="form-control" id="db-server-password" placeholder="@Translate("Db server password ")" />
+                </div>
+
+                <div class="col-md-4">
+                    <button class="btn btn-outline-secondary" id="connect-to-server"><i class="fa fa-cloud"></i> @Translate("Connect") </button>
+                </div>
+            </div>
+        </fieldset>
+    </div>
+    <div class="mb-2 d-none" id="databases-container">
+        <hr />
+        <div class="row">
+            <div class="col-md-4">
+                <fieldset>
+                    <legend>@Translate("Databases")</legend>
+                    <select class="form-control" id="databases"> </select>
+                </fieldset>
+            </div>
+
+        </div>
+    </div>
+    <div class="mb-2 d-none" id="tables-container">
+        <hr />
+        <div class="row">
+            <div class="col-md-4">
+                <fieldset>
+                    <legend>Tables</legend>
+                    <div class="mb-1">
+                        <button class="btn btn-outline-primary" id="check-all-tables"><i class="fa fa-check"></i> @Translate("Check All") </button>
+                        <button class="btn btn-outline-secondary" id="uncheck-all-tables"><i class="fa fa-square"></i> @Translate("Uncheck All") </button>
+                    </div>
+                    <ul class="list-group" id="tables">
+                    </ul>
+                </fieldset>
+            </div>
+            <div class="col-md-8">
+                <div class="row">
+                    <div class="col-md-3">
+                        <fieldset>
+                            <legend>@Translate("Target Database")</legend>
+                            <div class="form-group">
+                                <label>@Translate("Target database to use")</label>
+                                <select class="form-control" id="target-databases"> </select>
+                            </div>
+                        </fieldset>
+                    </div>
+                    <div class="col-md-6">
+                        <fieldset>
+                            <legend>@Translate("Parameters")</legend>
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="form-group">
+                                        <label>@Translate("Suffix to be added to table")</label>
+                                        <input type="text" placeholder="Suffix" id="table-suffix"
+                                               class="form-control" value="Audit">
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="form-group d-none" id="new-database-name-container">
+                                        <label>@Translate("New Database Name")</label>
+                                        <input type="text" placeholder="New Database Name created" id="new-database-name"
+                                               class="form-control" value="">
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+                    <div class="col-md-3">
+                        <button class="btn btn-outline-success btn-lg" id="create-audit-tables"><i class="fa fa-play"></i> @Translate("Create Audit Tables") </button>
+                    </div>
+
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <fieldset>
+                            <legend>@Translate("Log")</legend>
+                            <textarea id="log-area" class="form-control" rows="100" readonly></textarea>
+                        </fieldset>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>
+
+<script id="tmp-databases" type="text/x-jsrender">
+    <option value="_Choose_Database_"> ** @Translate("Choose a database ") ** </option>
+    {{for databases}}
+     <option value="{{:name}}">{{:name}}</option>
+    {{/for}}
+</script>
+
+<script id="tmp-target-databases" type="text/x-jsrender">
+    <option value="_Choose_Database_"> ** @Translate("Choose a database ") ** </option>
+    <option value="_New_Database_"> ** @Translate("New Database ") ** </option>
+
+    {{for databases}}
+     <option value="{{:name}}">{{:name}}</option>
+    {{/for}}
+</script>
+
+<script id="tmp-tables" type="text/x-jsrender">
+
+    {{for tables}}
+      <li class="list-group-item pl-5">
+          <label for="col-{{:name}}" class="mb-0">
+              <input id="col-{{:name}}" class="form-check-input me-1 table-check" type="checkbox" value="{{:name}}" aria-label="{{:name}}">
+              {{:name}}
+          </label>
+      </li>
+    {{/for}}
+</script>
+
+@section Scripts
+    {
+    <script src="~/js/auditing/index.js" asp-append-version="true"></script>
+
+}

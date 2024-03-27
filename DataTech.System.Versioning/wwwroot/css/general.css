@@ -1059,3 +1059,16 @@ ul.fancytree-container {
     padding: 8px !important;
 }
 /*  Trees Style */
+
+
+fieldset, legend {
+    all: revert; 
+}
+
+fieldset {
+    border: 2px #d2d2d2 solid;
+}
+
+textarea:read-only {
+    background-color: white !important
+}
