@@ -14,15 +14,17 @@ using System.Text;
 using Sylvan.Data.Csv;
 using System.IO;
 using System.Formats.Asn1;
+using System.IO.Compression;
+using Microsoft.AspNetCore.Hosting;
 
 namespace DataTech.System.Versioning.Service.Db
 {
     public class DatabaseService
     {
-
-        public DatabaseService()
+        private readonly IHostingEnvironment _env;
+        public DatabaseService(IHostingEnvironment env)
         {
-
+            _env = env;
         }
 
         #region Help Classes
@@ -823,6 +825,12 @@ namespace DataTech.System.Versioning.Service.Db
 
                 using SqlConnection conn = new SqlConnection(dbConnectionString.GetConnectionString());
                 await conn.OpenAsync();
+
+                string folderName = $"c:\\temp\\csv\\{DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss")}";
+
+                if (!Directory.Exists(folderName))
+                    Directory.CreateDirectory(folderName);
+
                 foreach (var checkedTable in getSourceDbTables.Response)
                 {
                     try
@@ -831,7 +839,7 @@ namespace DataTech.System.Versioning.Service.Db
 
                         var logPrefix = "\t";
 
-                        stringBuilder.AppendLine($"Creating backup file for table {sourceTable}");
+                        stringBuilder.AppendLine($"Creating backup file (cvs) for table {sourceTable}");
                         // Get table columns from source -----------------------------------------------------------  
 
                         // Read the schema for the target table
@@ -850,7 +858,7 @@ namespace DataTech.System.Versioning.Service.Db
 
                             };
 
-                        string filePath = $"c:\\temp\\csv\\{sourceTable}.csv";
+                        string filePath = $"{folderName}\\{sourceTable}.csv";
 
                         using var csv = CsvDataWriter.Create(filePath, options);
                         await csv.WriteAsync(reader);
@@ -860,11 +868,23 @@ namespace DataTech.System.Versioning.Service.Db
                     }
                     catch (Exception exInner)
                     {
-                        stringBuilder.AppendLine(exInner.Message); 
-                    } 
-                } 
+                        stringBuilder.AppendLine("ERROR: " + exInner.Message);
+                    }
+                }
 
-                return StopCleanAndReturn(stringBuilder, true);
+                stringBuilder.AppendLine($"Start Zipping all files");
+
+                //final archive name (I use date / time)
+                string zipFileName = string.Format("zipfile-{0:yyyy-MM-dd_hh-mm-ss}.zip", DateTime.Now);
+
+                var createZipResult = CreateZipFile(folderName, Path.Combine(_env.WebRootPath, "upload", "backup", zipFileName));
+                stringBuilder.AppendLine($"Finish Zipping all files");
+                result = StopCleanAndReturn(stringBuilder, true);
+
+                result.Message = $"/upload/backup/{zipFileName}";
+
+               
+                return result;
             }
             catch (Exception ex)
             {
@@ -872,6 +892,67 @@ namespace DataTech.System.Versioning.Service.Db
                 stringBuilder.AppendLine(ex.StackTrace);
                 return StopCleanAndReturn(stringBuilder);
             }
+
+
         }
+
+
+        private OperationResult<string> CreateZipFile(string dirRoot, string zipPath)
+        {
+            OperationResult<string> result = new OperationResult<string>();
+
+            try
+            {
+                //get a list of files
+                string[] filesToZip = Directory.GetFiles(dirRoot, "*.*", SearchOption.AllDirectories);
+
+                using (MemoryStream zipMS = new MemoryStream())
+                {
+                    using (ZipArchive zipArchive = new ZipArchive(zipMS, ZipArchiveMode.Create, true))
+                    {
+                        //loop through files to add
+                        foreach (string fileToZip in filesToZip)
+                        {
+                            //exclude some files? -I don't want to ZIP other .zips in the folder.
+                            if (new FileInfo(fileToZip).Extension == ".zip") continue;
+
+                            //exclude some file names maybe?
+                            if (fileToZip.Contains("node_modules")) continue;
+
+                            //read the file bytes
+                            byte[] fileToZipBytes = File.ReadAllBytes(fileToZip);
+
+                            //create the entry - this is the zipped filename
+                            //change slashes - now it's VALID
+                            ZipArchiveEntry zipFileEntry = zipArchive.CreateEntry(fileToZip.Replace(dirRoot, "").Replace("\\", ""));
+
+                            //add the file contents
+                            using (Stream zipEntryStream = zipFileEntry.Open())
+                            using (BinaryWriter zipFileBinary = new BinaryWriter(zipEntryStream))
+                            {
+                                zipFileBinary.Write(fileToZipBytes);
+                            }
+
+                            //lstLog.Items.Add("zipped: " + fileToZip);
+                        }
+                    }
+
+                    using (FileStream finalZipFileStream = new FileStream(zipPath, FileMode.Create))
+                    {
+                        zipMS.Seek(0, SeekOrigin.Begin);
+                        zipMS.CopyTo(finalZipFileStream);
+                    }
+
+                    result.Result = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                result.ErrorMessage = ex.Message;
+            }
+
+            return result;
+        }
+
     }
 }

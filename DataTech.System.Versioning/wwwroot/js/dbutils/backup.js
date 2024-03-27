@@ -107,8 +107,9 @@ var Backup = function () {
                 }
             }
 
-            createBackup(request, (response) => {
-                $("#log-area").val(response);
+            createBackup(request, (result) => {
+                window.location = result.message;
+                $("#log-area").val(result.response);
             }, (response) => {
                 $("#log-area").val(response);
             });
@@ -161,7 +162,7 @@ var Backup = function () {
             timeout: 10* 60 * 1000,
             success: function (result) { 
                 if (callback)
-                    callback(result.response);
+                    callback(result);
             },
             failure: function (result) {
                 General.notifyFailure(result.errorMessage);
